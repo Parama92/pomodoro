@@ -1,21 +1,7 @@
-# pomodoro
+# Pomodoro-timer
 
-> An implementation of the pomodoro timer
+> This is a simple implementation of the pomodoro timer using Vue.
 
-## Build Setup
+### The following is a screenshot of the timer in action:
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+![Image of Timer](http://res.cloudinary.com/dh372fqq0/image/upload/v1527323373/pomodoro.png)
