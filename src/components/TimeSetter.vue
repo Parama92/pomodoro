@@ -11,7 +11,7 @@
         </b-row>
         <b-row>
             <b-col class="text-center">
-                <b-button v-show="start.show" @click="startRunning">{{ startOrPause }} {{ buttonType }}</b-button>
+                <b-button v-show="start.show && notSkipped" @click="startRunning">{{ startOrPause }} {{ buttonType }}</b-button>
                 <b-button v-show="running || pause" @click="stopRunning">{{ skipOrStop }} {{ buttonType }}</b-button>
             </b-col>
         </b-row>
@@ -59,12 +59,13 @@ export default {
     return {
       time: this.start.val,
       // running: this.start.status,
-      pause: false
+      pause: false,
+      notSkipped: true
     }
   },
   methods: {
     minus () { // method to decrease the counter value
-        if (this.time === 0) {
+        if (this.time === 1) {
             this.time = 60
         } else {
             this.time--
@@ -72,7 +73,7 @@ export default {
     },
     plus () { // method to increase the counter value
         if (this.time === 60) {
-            this.time = 0
+            this.time = 1
         } else {
             this.time++
         }
@@ -89,6 +90,7 @@ export default {
     stopRunning () { // stop the clock
         this.pause = false
         this.$emit('stopped', this.button)
+        this.notSkipped = this.button.toLowerCase() == 'pomodoro' // if it is one of the breaks, make sure that the start button is not visible anymore when the timer is skipped.
     }
   }
 }
