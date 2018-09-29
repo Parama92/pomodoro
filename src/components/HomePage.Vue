@@ -38,6 +38,7 @@
 
 <script>
 import TimeSetter from './TimeSetter.vue'
+/* eslint-disable */
 
 export default {
   name: 'HomePage',
@@ -54,113 +55,112 @@ export default {
       animate: false,
       buttonType: '',
       running: {
-        pomodoro : {
-            show: true,
-            status : false,
-            val : 25
+        pomodoro: {
+          show: true,
+          status: false,
+          val: 25
         },
-        short : {
-            show: false,
-            status : false,
-            val : 5
+        short: {
+          show: false,
+          status: false,
+          val: 5
         },
-        long : {
-            show: false,
-            status : false,
-            val : 30
-        },
+        long: {
+          show: false,
+          status: false,
+          val: 30
+        }
       }
     }
   },
-  computed : {
+  computed: {
     //   clockStatus(){
     //     return this.showClock && this.timer.trim() !== '00 : 00'
     //   }
     blinkIt () { // if the timer counts down below '00 : 10', the timer starts blinking.
-        let [min , sec] = this.timer.split(':')
-        return (parseInt(min) === 0 && parseInt(sec) <= 10 && parseInt(sec) !== 0)
+      let [min, sec] = this.timer.split(':')
+      return (parseInt(min) === 0 && parseInt(sec) <= 10 && parseInt(sec) !== 0)
     }
   },
   methods: {
     startClock () {
-        this.animate = false
-        if (!this.running[this.buttonType].status) { // checks if clock is running
-            if (!['', '00 : 00'].includes(this.timer.trim())) { // checks if timer has ended or yet to begin. Enters block if check returns false
-                let timer = this.timer.split(':') // splits timer on ':' to form an array of [min, sec]
-                this.running[this.buttonType].status = true // the running status of the clock is changed to true
-                this.countDown(parseInt(timer[0].trim()), parseInt(timer[1].trim())) // the countDown timer is started with updated minute and second values
-            } else { // if timer has ended or yet to begin
-                for (let [state, val] of Object.entries(this.running)) {
-                    val.show = state == 'pomodoro'? true : state == this.buttonType // set all running status flags to false
-                }
-                this.showClock = true
-                this.runCountDown() // start countDown
-            }
+      this.animate = false
+      if (!this.running[this.buttonType].status) { // checks if clock is running
+        if (!['', '00 : 00'].includes(this.timer.trim())) { // checks if timer has ended or yet to begin. Enters block if check returns false
+          let timer = this.timer.split(':') // splits timer on ':' to form an array of [min, sec]
+          this.running[this.buttonType].status = true // the running status of the clock is changed to true
+          this.countDown(parseInt(timer[0].trim()), parseInt(timer[1].trim())) // the countDown timer is started with updated minute and second values
+        } else { // if timer has ended or yet to begin
+          for (let [state, val] of Object.entries(this.running)) {
+            val.show = state === 'pomodoro' ? true : state === this.buttonType // set all running status flags to false
+          }
+          this.showClock = true
+          this.runCountDown() // start countDown
         }
+      }
     },
     pauseClock () {
-        if (this.running[this.buttonType].status) {
-            clearTimeout(this.timerId)
-            this.running[this.buttonType].status = false
-        }
+      if (this.running[this.buttonType].status) {
+        clearTimeout(this.timerId)
+        this.running[this.buttonType].status = false
+      }
     },
     stopClock (buttonType) {
-        buttonType = buttonType.toLowerCase()
-        clearTimeout(this.timerId) // clear the timeout function so that that the timer doesn't get renewed
-        this.running[buttonType].status = false // set the running flag to false
-        this.showClock = false
-        this.timer = ''
-        
+      buttonType = buttonType.toLowerCase()
+      clearTimeout(this.timerId) // clear the timeout function so that that the timer doesn't get renewed
+      this.running[buttonType].status = false // set the running flag to false
+      this.showClock = false
+      this.timer = ''
     },
     startTimer (data) {
-        let buttonType = data.buttonType.toLowerCase() // define a local variable to store the buttonType obtained from the child component
-        if (this.running[buttonType] === undefined) { // if the buttonType is not recognised throw an error
-            throw new Error(`Button type: '${data.buttonType}' not recognised`)
-        } else {
-            this.buttonType = buttonType // update global variable
-            this.running[buttonType].val = this.clock = data.time // update the clock and timer settings
-            this.startClock() // start the clock
-        }
+      let buttonType = data.buttonType.toLowerCase() // define a local variable to store the buttonType obtained from the child component
+      if (this.running[buttonType] === undefined) { // if the buttonType is not recognised throw an error
+        throw new Error(`Button type: '${data.buttonType}' not recognised`)
+      } else {
+        this.buttonType = buttonType // update global variable
+        this.running[buttonType].val = this.clock = data.time // update the clock and timer settings
+        this.startClock() // start the clock
+      }
     },
     runCountDown () {
-        if (this.running[this.buttonType] !== undefined) { // checks if the buttonType exists in the 'running' object
-            if (!this.running[this.buttonType].status) { // checks if the timer for this buttonType is running
-                this.running[this.buttonType].status = true // sets the timer status to true
-                this.countDown() // starts countDown
-            }
+      if (this.running[this.buttonType] !== undefined) { // checks if the buttonType exists in the 'running' object
+        if (!this.running[this.buttonType].status) { // checks if the timer for this buttonType is running
+          this.running[this.buttonType].status = true // sets the timer status to true
+          this.countDown() // starts countDown
         }
+      }
     },
     countDown (min = this.clock, sec = 0) {
-        // this.running.pomodoro.status = true
-        if (min > 0 || sec > 0) { // enters only if timer is not '00 : 00'
-            if (sec == 0) { // if sec is 0 reduce min by one and set sec to 59
-                min--
-                sec = 59
-            } else {
-                sec--
-            }
-            this.timer = `${this.format(min)} : ${this.format(sec)}` // update the value of timer
-            this.timerId = setTimeout(() => {
-                this.countDown(min, sec) // call this function recursively after every second
-            }, 1000)
-        } else { // when timer = '00 : 00'
-            // this.running.pomodoro.status = false
-            // this.updatePomodoro();
-            this.running[this.buttonType].status = false // set the running status to false
-            if (this.buttonType === 'pomodoro') { this.updatePomodoro() } // update other features if the pomodoro counter ends
+      // this.running.pomodoro.status = true
+      if (min > 0 || sec > 0) { // enters only if timer is not '00 : 00'
+        if (sec === 0) { // if sec is 0 reduce min by one and set sec to 59
+          min--
+          sec = 59
+        } else {
+          sec--
         }
+        this.timer = `${this.format(min)} : ${this.format(sec)}` // update the value of timer
+        this.timerId = setTimeout(() => {
+          this.countDown(min, sec) // call this function recursively after every second
+        }, 1000)
+      } else { // when timer = '00 : 00'
+        // this.running.pomodoro.status = false
+        // this.updatePomodoro();
+        this.running[this.buttonType].status = false // set the running status to false
+        if (this.buttonType === 'pomodoro') { this.updatePomodoro() } // update other features if the pomodoro counter ends
+      }
     },
     format (time) {
-        return time < 10 ? '0' + time : time
+      return time < 10 ? '0' + time : time
     },
     updatePomodoro () {
-        this.animate = true;
-        if (this.pomodoro === 4) { // if at 4th pomodoro start long break else start short break
-            this.running.long.show = true
-        } else {
-            this.running.short.show = true
-            this.pomodoro++
-        }
+      this.animate = true
+      if (this.pomodoro === 4) { // if at 4th pomodoro start long break else start short break
+        this.running.long.show = true
+      } else {
+        this.running.short.show = true
+        this.pomodoro++
+      }
     }
   }
 }
